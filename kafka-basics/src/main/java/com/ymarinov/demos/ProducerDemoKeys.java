@@ -24,7 +24,7 @@ public class ProducerDemoKeys {
         // create the Producer
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             // create a producer record
             ProducerRecord<String, String> producerRecord = new ProducerRecord<>(
                     "demo_java",

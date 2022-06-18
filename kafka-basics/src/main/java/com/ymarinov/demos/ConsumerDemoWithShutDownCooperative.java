@@ -10,23 +10,21 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 
-public class ConsumerDemoWithShutDown {
+public class ConsumerDemoWithShutDownCooperative {
 
-    public static final String GROUP_ID = "my-third-application";
-    private static final Logger log = LoggerFactory.getLogger(ConsumerDemoWithShutDown.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(ConsumerDemoWithShutDownCooperative.class.getName());
 
     public static void main(String[] args) {
         log.info("I am a Kafka CONSUMER with shut down!");
 
-        final String bootstrapServerHost = "localhost:9092";
-
         // Creating consumer properties
         Properties properties = new Properties();
-        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServerHost);
+        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);  // This is the group id
+        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "my-third-application");
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        properties.setProperty(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, CooperativeStickyAssignor.class.getName());
 
         // Create Consumer
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
@@ -61,6 +59,7 @@ public class ConsumerDemoWithShutDown {
                     log.info("Partition: " + record.partition() + ", Offset: " + record.offset());
                 }
             }
+
         } catch (WakeupException e) {
             log.info("Wake up exception!");
             // we ignore this as this is an expected exception when closing a consumer
